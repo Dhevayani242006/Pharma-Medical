@@ -1,0 +1,957 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PharmaCare â€“ Pharmacy Billing & Inventory System</title>
+  
+  <!-- FontAwesome 6 CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="brand-header">
+        <i class="fa-solid fa-prescription-bottle-medical brand-logo"></i>
+        <div class="brand-title">PharmaCare</div>
+        <span class="brand-badge">BCA</span>
+      </div>
+
+      <nav class="sidebar-menu">
+        <div class="menu-category">Overview</div>
+        <a href="#home" class="nav-link active" data-view="view-home">
+          <i class="fa-solid fa-house"></i> Home
+        </a>
+        <a href="#dashboard" class="nav-link" data-view="view-dashboard">
+          <i class="fa-solid fa-chart-pie"></i> Dashboard
+        </a>
+
+        <div class="menu-category">Inventory & Stock</div>
+        <a href="#inventory" class="nav-link" data-view="view-inventory">
+          <i class="fa-solid fa-boxes-stacked"></i> All Stocks Level
+        </a>
+        <a href="#add-medicine" class="nav-link" data-view="view-add-medicine">
+          <i class="fa-solid fa-circle-plus"></i> Add New Medicine
+        </a>
+        <a href="#categories" class="nav-link" data-view="view-categories">
+          <i class="fa-solid fa-tags"></i> Categories
+        </a>
+        <a href="#low-stock" class="nav-link" data-view="view-low-stock">
+          <i class="fa-solid fa-triangle-exclamation"></i> Low Stock Alerts
+          <span class="nav-badge" id="sidebar-low-stock-count">0</span>
+        </a>
+
+        <div class="menu-category">Sales & Customers</div>
+        <a href="#billing" class="nav-link" data-view="view-billing">
+          <i class="fa-solid fa-cash-register"></i> Billing & POS
+        </a>
+        <a href="#customers" class="nav-link" data-view="view-customers">
+          <i class="fa-solid fa-users"></i> Customer Details
+        </a>
+        <a href="#sales-report" class="nav-link" data-view="view-sales-report">
+          <i class="fa-solid fa-file-invoice-dollar"></i> Sales Reports
+        </a>
+
+        <div class="menu-category">Support & System</div>
+        <a href="#contact" class="nav-link" data-view="view-contact">
+          <i class="fa-solid fa-envelope"></i> Contact Pharmacy
+        </a>
+
+      </nav>
+
+      <div class="user-footer">
+        <div class="user-avatar" id="user-avatar-initials">RK</div>
+        <div class="user-info">
+          <div class="user-name" id="user-display-name">Dr. Ramesh Kumar</div>
+          <div class="user-role" id="user-display-role">Administrator</div>
+        </div>
+        <button class="btn-logout" id="btn-login-logout-trigger" title="Switch User / Logout">
+          <i class="fa-solid fa-right-from-bracket"></i>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="main-wrapper">
+      <!-- Top Sticky Header -->
+      <header class="top-header">
+        <div class="header-search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="global-search-input" placeholder="Search medicines, generic names, batch...">
+        </div>
+
+        <div class="header-actions">
+          <div class="digital-clock" id="live-clock">
+            <i class="fa-regular fa-clock"></i> 00:00:00 AM
+          </div>
+
+          <button class="btn-icon" id="btn-theme-toggle" title="Toggle Light/Dark Theme">
+            <i class="fa-solid fa-moon"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- Viewport Sections -->
+      <main class="content-area">
+        
+        <!-- 1. HOME MODULE -->
+        <section id="view-home" class="view-section active">
+          <!-- Hero Banner Graphic Card -->
+          <div class="card" style="padding: 0; overflow: hidden; position: relative; border-color: var(--primary);">
+            <div style="position: relative; width: 100%; height: 250px; overflow: hidden; background: #0f172a;">
+              <img src="assets/images/pharmacy-banner.svg" alt="PharmaCare Banner Graphic" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.9;">
+              <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(90deg, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.6) 60%, rgba(15,23,42,0.2) 100%); display: flex; align-items: center; padding: 2rem 3rem;">
+                <div style="max-width: 650px;">
+                  <span class="badge badge-success" style="margin-bottom: 0.8rem;">BCA Full-Stack Mini Project</span>
+                  <h1 style="font-size: 2.2rem; font-weight: 800; line-height: 1.2; color: #ffffff;">PharmaCare Management System</h1>
+                  <p style="color: #cbd5e1; font-size: 1.05rem; margin-top: 0.6rem;">
+                    Pharmacy Billing, Customer Management & Stock Level Control powered by Express.js REST APIs and persistent Microsoft Excel (`.xlsx`) data storage.
+                  </p>
+                  
+                  <div style="display: flex; gap: 1rem; margin-top: 1.4rem; flex-wrap: wrap;">
+                    <button class="btn btn-primary" onclick="appRouter('view-billing')">
+                      <i class="fa-solid fa-cash-register"></i> Open POS Billing
+                    </button>
+                    <button class="btn btn-secondary" onclick="appRouter('view-inventory')">
+                      <i class="fa-solid fa-boxes-stacked"></i> All Stocks Level
+                    </button>
+                    <button class="btn btn-secondary" onclick="appRouter('view-add-medicine')">
+                      <i class="fa-solid fa-plus"></i> Add New Medicine
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Feature Cards Grid -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+            <div class="card" style="display: flex; flex-direction: column;">
+              <div style="height: 140px; border-radius: var(--radius-md); overflow: hidden; margin-bottom: 1rem; background: #0f172a;">
+                <img src="assets/images/excel-db.svg" alt="Excel DB Graphic" style="width: 100%; height: 100%; object-fit: cover;">
+              </div>
+              <h3 style="margin-bottom: 0.5rem;"><i class="fa-solid fa-file-excel" style="color: var(--success);"></i> Excel (.xlsx) Database</h3>
+              <p style="color: var(--text-muted); font-size: 0.9rem; flex: 1;">
+                Zero-database-server overhead. Uses SheetJS npm engine to persist stock, customers, sales, and line items directly into Excel worksheets.
+              </p>
+            </div>
+
+            <div class="card" style="display: flex; flex-direction: column;">
+              <div style="height: 140px; border-radius: var(--radius-md); overflow: hidden; margin-bottom: 1rem; background: #0f172a;">
+                <img src="assets/images/pos-billing.svg" alt="POS Terminal Graphic" style="width: 100%; height: 100%; object-fit: cover;">
+              </div>
+              <h3 style="margin-bottom: 0.5rem;"><i class="fa-solid fa-qrcode" style="color: var(--secondary);"></i> POS Billing & UPI QR Code</h3>
+              <p style="color: var(--text-muted); font-size: 0.9rem; flex: 1;">
+                Point-of-sale terminal with instant stock search, inline customer creation, automated stock deduction, UPI QR code scanner, and printable thermal receipt generator.
+              </p>
+            </div>
+
+            <div class="card" style="display: flex; flex-direction: column;">
+              <div style="height: 140px; border-radius: var(--radius-md); overflow: hidden; margin-bottom: 1rem; background: #0f172a;">
+                <img src="assets/images/inventory-stock.svg" alt="Inventory Graphic" style="width: 100%; height: 100%; object-fit: cover;">
+              </div>
+              <h3 style="margin-bottom: 0.5rem;"><i class="fa-solid fa-boxes-stacked" style="color: var(--warning);"></i> All Stocks Level Control</h3>
+              <p style="color: var(--text-muted); font-size: 0.9rem; flex: 1;">
+                Automated stock level tracking with real-time indicators for In Stock, Low Stock, and Out of Stock thresholds.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. LOGIN MODULE -->
+        <section id="view-login" class="view-section">
+          <div style="max-width: 450px; margin: 2rem auto;">
+            <div class="card">
+              <div style="text-align: center; margin-bottom: 1.5rem;">
+                <i class="fa-solid fa-prescription-bottle-medical" style="font-size: 3rem; color: var(--primary);"></i>
+                <h2 style="margin-top: 0.75rem;">PharmaCare Portal</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Sign in to access pharmacy billing & inventory</p>
+              </div>
+
+              <form id="login-form">
+                <div class="form-group">
+                  <label for="login-username">Username</label>
+                  <input type="text" id="login-username" class="form-control" placeholder="e.g. admin" required>
+                </div>
+                <div class="form-group">
+                  <label for="login-password">Password</label>
+                  <input type="password" id="login-password" class="form-control" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                  <i class="fa-solid fa-right-to-bracket"></i> Login to System
+                </button>
+              </form>
+
+              <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-color); font-size: 0.82rem; color: var(--text-muted); text-align: center;">
+                <strong>Demo Credentials:</strong><br>
+                Admin: <code>admin</code> / <code>admin123</code><br>
+                Pharmacist: <code>pharmacist</code> / <code>pharma123</code>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. DASHBOARD MODULE -->
+        <section id="view-dashboard" class="view-section">
+          <div class="section-header">
+            <div class="section-title">
+              <h2>Dashboard & Overview</h2>
+              <p>Real-time analytics, stock monitors, and financial metrics</p>
+            </div>
+            <button class="btn btn-secondary" onclick="loadDashboardStats()">
+              <i class="fa-solid fa-rotate"></i> Refresh Data
+            </button>
+          </div>
+
+          <!-- Stat Grid -->
+          <div class="stat-grid">
+            <div class="stat-card" style="--stat-color: var(--primary); --stat-bg: var(--primary-light);">
+              <div class="stat-icon"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+              <div class="stat-info">
+                <h3 id="dash-total-revenue">â‚¹0.00</h3>
+                <p>Total Sales Revenue</p>
+              </div>
+            </div>
+
+            <div class="stat-card" style="--stat-color: var(--secondary); --stat-bg: rgba(2,132,199,0.15);">
+              <div class="stat-icon"><i class="fa-solid fa-pills"></i></div>
+              <div class="stat-info">
+                <h3 id="dash-total-medicines">0</h3>
+                <p>Medicines in Inventory</p>
+              </div>
+            </div>
+
+            <div class="stat-card" style="--stat-color: var(--warning); --stat-bg: rgba(245,158,11,0.15);">
+              <div class="stat-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+              <div class="stat-info">
+                <h3 id="dash-low-stock">0</h3>
+                <p>Low Stock Alerts</p>
+              </div>
+            </div>
+
+            <div class="stat-card" style="--stat-color: var(--danger); --stat-bg: rgba(239,68,68,0.15);">
+              <div class="stat-icon"><i class="fa-solid fa-circle-xmark"></i></div>
+              <div class="stat-info">
+                <h3 id="dash-out-of-stock">0</h3>
+                <p>Out of Stock Items</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dashboard Recent Data Grid -->
+          <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title"><i class="fa-solid fa-receipt"></i> Recent Billing Transactions</div>
+                <button class="btn btn-sm btn-secondary" onclick="appRouter('view-sales-report')">View All</button>
+              </div>
+              <div class="table-responsive">
+                <table class="custom-table">
+                  <thead>
+                    <tr>
+                      <th>Invoice #</th>
+                      <th>Customer</th>
+                      <th>Amount</th>
+                      <th>Payment</th>
+                      <th>Date</th>
+                    </tr>
+                  </thead>
+                  <tbody id="dash-recent-sales-tbody">
+                    <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Loading transactions...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title"><i class="fa-solid fa-triangle-exclamation" style="color: var(--warning);"></i> Low Stock Alert Ticker</div>
+                <button class="btn btn-sm btn-secondary" onclick="appRouter('view-low-stock')">Restock</button>
+              </div>
+              <div id="dash-low-stock-list" style="display: flex; flex-direction: column; gap: 0.8rem;">
+                <div style="text-align: center; color: var(--text-muted); font-size: 0.88rem;">Checking stock levels...</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. MEDICINE INVENTORY & ALL STOCKS LEVEL MODULE -->
+        <section id="view-inventory" class="view-section">
+          <div class="section-header">
+            <div class="section-title">
+              <h2>All Stocks Level & Medicine Inventory</h2>
+              <p>Real-time stock indicators (In Stock, Low Stock, Out of Stock) stored in Excel</p>
+            </div>
+            <button class="btn btn-primary" onclick="appRouter('view-add-medicine')">
+              <i class="fa-solid fa-plus"></i> Add New Medicine
+            </button>
+          </div>
+
+          <!-- Stock Level Summary Metrics Bar -->
+          <div class="stat-grid" style="margin-bottom: 1.2rem;">
+            <div class="stat-card" style="--stat-color: var(--success); --stat-bg: rgba(16,185,129,0.15); padding: 1rem;">
+              <div class="stat-icon" style="width: 40px; height: 40px; font-size: 1.1rem;"><i class="fa-solid fa-circle-check"></i></div>
+              <div class="stat-info">
+                <h3 id="inv-count-instock" style="font-size: 1.3rem;">0</h3>
+                <p style="font-size: 0.75rem;">In Stock Items</p>
+              </div>
+            </div>
+
+            <div class="stat-card" style="--stat-color: var(--warning); --stat-bg: rgba(245,158,11,0.15); padding: 1rem;">
+              <div class="stat-icon" style="width: 40px; height: 40px; font-size: 1.1rem;"><i class="fa-solid fa-triangle-exclamation"></i></div>
+              <div class="stat-info">
+                <h3 id="inv-count-lowstock" style="font-size: 1.3rem;">0</h3>
+                <p style="font-size: 0.75rem;">Low Stock Items</p>
+              </div>
+            </div>
+
+            <div class="stat-card" style="--stat-color: var(--danger); --stat-bg: rgba(239,68,68,0.15); padding: 1rem;">
+              <div class="stat-icon" style="width: 40px; height: 40px; font-size: 1.1rem;"><i class="fa-solid fa-circle-xmark"></i></div>
+              <div class="stat-info">
+                <h3 id="inv-count-outofstock" style="font-size: 1.3rem;">0</h3>
+                <p style="font-size: 0.75rem;">Out of Stock Items</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <!-- Search Input Box (No filter dropdowns as requested) -->
+            <div style="display: flex; gap: 1rem; margin-bottom: 1.2rem; flex-wrap: wrap; align-items: center;">
+              <div style="position: relative; flex: 1; max-width: 450px;">
+                <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-dim);"></i>
+                <input type="text" id="inventory-search-input" class="form-control" placeholder="Search medicine name, generic formula, batch number..." style="padding-left: 2.6rem;">
+              </div>
+              <button class="btn btn-secondary" onclick="loadInventoryTable()" title="Refresh Inventory Table">
+                <i class="fa-solid fa-rotate"></i> Refresh List
+              </button>
+            </div>
+
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Medicine Name</th>
+                    <th>Category</th>
+                    <th>Batch / Expiry</th>
+                    <th>Price (â‚¹)</th>
+                    <th>Quantity</th>
+                    <th>Stock Level Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="inventory-table-body">
+                  <tr><td colspan="8" style="text-align: center; padding: 2rem;">Loading inventory from Excel...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- 5. ADD MEDICINE MODULE (Single Unified Form) -->
+        <section id="view-add-medicine" class="view-section">
+          <div class="section-header">
+            <div class="section-title">
+              <h2>Add New Medicine Record</h2>
+              <p>Add a new pharmaceutical item into Excel inventory storage</p>
+            </div>
+            <button class="btn btn-secondary" onclick="appRouter('view-inventory')">
+              <i class="fa-solid fa-arrow-left"></i> Back to Inventory
+            </button>
+          </div>
+
+          <div class="card" style="max-width: 850px;">
+            <form id="add-medicine-form">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="add-med-name">Medicine Name *</label>
+                  <input type="text" id="add-med-name" class="form-control" placeholder="e.g. Paracetamol 500mg" required>
+                </div>
+
+                <div class="form-group">
+                  <label for="add-med-generic">Generic Name</label>
+                  <input type="text" id="add-med-generic" class="form-control" placeholder="e.g. Acetaminophen">
+                </div>
+
+                <div class="form-group">
+                  <label for="add-med-category">Category *</label>
+                  <select id="add-med-category" class="form-control" required></select>
+                </div>
+
+                <div class="form-group">
+                  <label for="add-med-unit">Unit Type</label>
+                  <select id="add-med-unit" class="form-control">
+                    <option value="Strip (10 Tabs)">Strip (10 Tabs)</option>
+                    <option value="Strip (15 Tabs)">Strip (15 Tabs)</option>
+                    <option value="Bottle (30 Tabs)">Bottle (30 Tabs)</option>
+                    <option value="Syrup Bottle">Syrup Bottle</option>
+                    <option value="Injection Pack">Injection Pack</option>
+                    <option value="Cream / Ointment">Cream / Ointment</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="add-med-batch">Batch Number</label>
+                  <input type="text" id="add-med-batch" class="form-control" placeholder="e.g. BATCH-2026-X">
+                </div>
+
+                <div class="form-group">
+                  <label for="add-med-expiry">Expiry Date</label>
+                  <input type="date" id="add-med-expiry" class="form-control" value="2027-12-31">
+                </div>
+
+                <div class="form-group">
+                  <label for="add-med-purchase-price">Purchase Price (â‚¹)</label>
+                  <input type="number" step="0.01" id="add-med-purchase-price" class="form-control" placeholder="0.00">
+                </div>
+
+                <div class="form-group">
+                  <label for="add-med-selling-price">Selling Price (â‚¹) *</label>
+                  <input type="number" step="0.01" id="add-med-selling-price" class="form-control" placeholder="0.00" required>
+                </div>
+
+                <div class="form-group">
+                  <label for="add-med-stock">Initial Stock Quantity *</label>
+                  <input type="number" id="add-med-stock" class="form-control" placeholder="100" required>
+                </div>
+
+                <div class="form-group">
+                  <label for="add-med-min-stock">Low Stock Alert Limit</label>
+                  <input type="number" id="add-med-min-stock" class="form-control" value="15">
+                </div>
+              </div>
+
+              <div style="margin-top: 1.5rem; display: flex; justify-content: flex-end; gap: 1rem;">
+                <button type="reset" class="btn btn-secondary">Reset Form</button>
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-save"></i> Save to Excel</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- 8. MEDICINE CATEGORIES MODULE -->
+        <section id="view-categories" class="view-section">
+          <div class="section-header">
+            <div class="section-title">
+              <h2>Medicine Categories</h2>
+              <p>Organize medicines into pharmaceutical groups</p>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem;">
+            <div class="card">
+              <div class="card-title" style="margin-bottom: 1.2rem;"><i class="fa-solid fa-folder-plus"></i> Add Category</div>
+              <form id="add-category-form">
+                <div class="form-group">
+                  <label for="cat-name">Category Name *</label>
+                  <input type="text" id="cat-name" class="form-control" placeholder="e.g. Dermatological" required>
+                </div>
+                <div class="form-group">
+                  <label for="cat-desc">Description</label>
+                  <textarea id="cat-desc" class="form-control" rows="3" placeholder="Brief description..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                  <i class="fa-solid fa-plus"></i> Add Category
+                </button>
+              </form>
+            </div>
+
+            <div class="card">
+              <div class="card-title" style="margin-bottom: 1.2rem;"><i class="fa-solid fa-list"></i> Existing Categories</div>
+              <div class="table-responsive">
+                <table class="custom-table">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Category Name</th>
+                      <th>Description</th>
+                      <th>Medicines</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="categories-table-body">
+                    <tr><td colspan="5" style="text-align: center;">Loading categories...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 9. CUSTOMER DETAILS MODULE -->
+        <section id="view-customers" class="view-section">
+          <div class="section-header">
+            <div class="section-title">
+              <h2>Customer Directory</h2>
+              <p>Manage customer records and track purchase histories</p>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem;">
+            <div class="card">
+              <div class="card-title" style="margin-bottom: 1.2rem;"><i class="fa-solid fa-user-plus"></i> Register Customer</div>
+              <form id="add-customer-form">
+                <div class="form-group">
+                  <label for="cust-name">Full Name *</label>
+                  <input type="text" id="cust-name" class="form-control" placeholder="e.g. Ananya Roy" required>
+                </div>
+                <div class="form-group">
+                  <label for="cust-phone">Phone Number *</label>
+                  <input type="tel" id="cust-phone" class="form-control" placeholder="10-digit mobile" required pattern="[0-9]{10}">
+                </div>
+                <div class="form-group">
+                  <label for="cust-email">Email Address</label>
+                  <input type="email" id="cust-email" class="form-control" placeholder="customer@example.com">
+                </div>
+                <div class="form-group">
+                  <label for="cust-address">City / Address</label>
+                  <input type="text" id="cust-address" class="form-control" placeholder="e.g. New Delhi">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                  <i class="fa-solid fa-save"></i> Register Customer
+                </button>
+              </form>
+            </div>
+
+            <div class="card">
+              <div class="card-title" style="margin-bottom: 1.2rem;"><i class="fa-solid fa-users"></i> Registered Customers</div>
+              <div class="table-responsive">
+                <table class="custom-table">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Customer Name</th>
+                      <th>Phone</th>
+                      <th>Total Purchased</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="customers-table-body">
+                    <tr><td colspan="5" style="text-align: center;">Loading customer data...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 10. BILLING SYSTEM (POS) & UPI QR MODULE -->
+        <section id="view-billing" class="view-section">
+          <div class="section-header">
+            <div class="section-title">
+              <h2>Pharmacy Billing & POS Terminal</h2>
+              <p>Select medicines, add customer, choose payment (Cash/UPI/Card), and print thermal receipt</p>
+            </div>
+            <button class="btn btn-secondary" onclick="resetCart()">
+              <i class="fa-solid fa-trash-can"></i> Clear Cart
+            </button>
+          </div>
+
+          <div class="pos-container">
+            <!-- Left: Medicine Selection Grid -->
+            <div>
+              <div class="card" style="margin-bottom: 1rem; padding: 1rem;">
+                <div style="display: flex; gap: 0.8rem; align-items: center;">
+                  <i class="fa-solid fa-magnifying-glass" style="color: var(--text-dim);"></i>
+                  <input type="text" id="pos-search-input" class="form-control" placeholder="Search medicine to add to bill...">
+                </div>
+              </div>
+
+              <div class="pos-products-grid" id="pos-products-grid">
+                <!-- Dynamically populated product cards -->
+              </div>
+            </div>
+
+            <!-- Right: Interactive Cart, Customer & Checkout Panel -->
+            <div class="cart-panel">
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <h3 style="font-size: 1.1rem;"><i class="fa-solid fa-cart-shopping" style="color: var(--primary);"></i> Billing Cart</h3>
+                <span class="badge badge-info" id="cart-items-count">0 items</span>
+              </div>
+
+              <!-- Customer Selection with Inline "+ Add New Customer" button -->
+              <div style="margin-top: 1rem; background: var(--bg-input); padding: 0.8rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                  <label for="pos-customer-select" style="font-size: 0.85rem; font-weight: 600;">Customer Details</label>
+                  <button type="button" class="btn btn-sm btn-primary" onclick="openPOSAddCustomerModal()" style="padding: 2px 8px; font-size: 0.78rem;">
+                    <i class="fa-solid fa-user-plus"></i> + Add New Customer
+                  </button>
+                </div>
+                <select id="pos-customer-select" class="form-control">
+                  <option value="GUEST">Walk-in / Guest Customer</option>
+                </select>
+              </div>
+
+              <div class="cart-items-list" id="cart-items-container">
+                <div style="text-align: center; color: var(--text-muted); padding: 2rem 0;">
+                  <i class="fa-solid fa-basket-shopping" style="font-size: 2rem; color: var(--text-dim);"></i>
+                  <p style="margin-top: 0.5rem; font-size: 0.85rem;">Cart is empty. Click medicines on left to add.</p>
+                </div>
+              </div>
+
+              <div style="margin-top: auto;">
+                <div class="cart-summary-line">
+                  <span>Subtotal</span>
+                  <span id="cart-subtotal">â‚¹0.00</span>
+                </div>
+
+                <div class="cart-summary-line">
+                  <span>Discount (â‚¹)</span>
+                  <input type="number" id="cart-discount-input" value="0" class="form-control" style="width: 80px; padding: 2px 6px; text-align: right;" onchange="updateCartTotals()">
+                </div>
+
+                <div class="cart-summary-line">
+                  <span>Tax (â‚¹)</span>
+                  <input type="number" id="cart-tax-input" value="0" class="form-control" style="width: 80px; padding: 2px 6px; text-align: right;" onchange="updateCartTotals()">
+                </div>
+
+                <div class="cart-summary-line">
+                  <span>Payment Method</span>
+                  <select id="cart-payment-method" class="form-control" style="width: 130px; padding: 2px 6px; font-weight: 600;" onchange="handlePaymentMethodChange()">
+                    <option value="Cash">ðŸ’µ Cash</option>
+                    <option value="UPI">ðŸ“± Pay via UPI</option>
+                    <option value="Card">ðŸ’³ Card</option>
+                  </select>
+                </div>
+
+                <!-- UPI QR Code Payment Box (Visible when UPI is selected) -->
+                <div id="upi-qr-container" style="display: none; background: #ffffff; color: #0f172a; padding: 1rem; border-radius: var(--radius-md); margin-top: 0.8rem; text-align: center;">
+                  <div style="font-weight: 700; font-size: 0.9rem; margin-bottom: 0.3rem;">
+                    <i class="fa-solid fa-qrcode" style="color: var(--primary);"></i> Scan UPI QR Code to Pay
+                  </div>
+                  <div style="font-size: 0.8rem; color: #475569; margin-bottom: 0.6rem;">
+                    UPI ID: <strong id="upi-display-id">pharmacare@upi</strong>
+                  </div>
+                  
+                  <div id="upi-qr-image-wrapper" style="display: flex; justify-content: center; margin-bottom: 0.6rem;">
+                    <img id="upi-qr-img" src="" alt="UPI Payment QR Code" style="width: 160px; height: 160px; border: 2px stroke #0d9488; border-radius: 8px;">
+                  </div>
+
+                  <div id="upi-unconfigured-msg" style="display: none; color: var(--danger); font-size: 0.8rem; font-weight: 600;">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Pharmacy UPI ID not configured. Please set PHARMACY_UPI_ID in settings.
+                  </div>
+
+                  <div style="font-size: 0.82rem; font-weight: 700; color: var(--primary);">
+                    Amount to Pay: <span id="upi-amount-display">â‚¹0.00</span>
+                  </div>
+                </div>
+
+                <div class="cart-summary-line total">
+                  <span>Net Payable</span>
+                  <span id="cart-net-total" style="color: var(--primary);">â‚¹0.00</span>
+                </div>
+
+                <button class="btn btn-primary" id="btn-checkout" style="width: 100%; margin-top: 1rem; padding: 0.8rem;" onclick="processCheckout()">
+                  <i class="fa-solid fa-check-circle"></i> <span id="btn-checkout-text">Complete Sale & Print Bill</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 14. SALES REPORT MODULE -->
+        <section id="view-sales-report" class="view-section">
+          <div class="section-header">
+            <div class="section-title">
+              <h2>Sales Reports & Financial Analytics</h2>
+              <p>Revenue analysis, date-range filtering, and Excel database downloads</p>
+            </div>
+            <a href="/api/reports/download-db" class="btn btn-secondary">
+              <i class="fa-solid fa-download"></i> Download Excel (.xlsx) Database
+            </a>
+          </div>
+
+          <div class="card">
+            <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: flex-end;">
+              <div class="form-group" style="margin-bottom: 0;">
+                <label>Start Date</label>
+                <input type="date" id="report-start-date" class="form-control">
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label>End Date</label>
+                <input type="date" id="report-end-date" class="form-control">
+              </div>
+              <button class="btn btn-primary" onclick="loadSalesReport()">
+                <i class="fa-solid fa-chart-line"></i> Generate Report
+              </button>
+            </div>
+
+            <div class="stat-grid" style="margin-bottom: 1.5rem;">
+              <div class="stat-card" style="--stat-color: var(--primary);">
+                <div class="stat-icon"><i class="fa-solid fa-file-invoice"></i></div>
+                <div class="stat-info">
+                  <h3 id="report-total-invoices">0</h3>
+                  <p>Invoices Issued</p>
+                </div>
+              </div>
+              <div class="stat-card" style="--stat-color: var(--success);">
+                <div class="stat-icon"><i class="fa-solid fa-money-bill-wave"></i></div>
+                <div class="stat-info">
+                  <h3 id="report-total-revenue">â‚¹0.00</h3>
+                  <p>Net Revenue</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Invoice #</th>
+                    <th>Customer Name</th>
+                    <th>Date & Time</th>
+                    <th>Payment Method</th>
+                    <th>Discount</th>
+                    <th>Net Amount</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="report-sales-tbody">
+                  <tr><td colspan="7" style="text-align: center;">Loading report...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- 15. LOW STOCK ALERT MODULE -->
+        <section id="view-low-stock" class="view-section">
+          <div class="section-header">
+            <div class="section-title">
+              <h2>Low Stock Alert Center</h2>
+              <p>Items reaching critical threshold required to reorder</p>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Medicine Name</th>
+                    <th>Category</th>
+                    <th>Batch</th>
+                    <th>Current Stock</th>
+                    <th>Alert Limit</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="low-stock-page-tbody">
+                  <tr><td colspan="7" style="text-align: center;">Loading low stock alerts...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- 16. EXPLAINED & IMPROVED CONTACT MODULE -->
+        <section id="view-contact" class="view-section">
+          <div class="section-header">
+            <div class="section-title">
+              <h2>Contact Pharmacy Support</h2>
+              <p>Have questions regarding medicines, order status, or billing? Reach out to our pharmacy team.</p>
+            </div>
+          </div>
+
+          <div class="card" style="background: linear-gradient(135deg, rgba(13,148,136,0.1) 0%, rgba(2,132,199,0.1) 100%); margin-bottom: 1.5rem;">
+            <div style="display: flex; gap: 1rem; align-items: center;">
+              <i class="fa-solid fa-circle-info" style="font-size: 2rem; color: var(--primary);"></i>
+              <div>
+                <strong style="font-size: 1.05rem;">How Can We Help You?</strong>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.2rem;">
+                  Customers and patients can use this contact page to inquire about medicine stock availability, seek assistance regarding recent billing transactions, verify prescription guidelines, or request pharmacy store assistance.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+            <div class="card">
+              <div class="card-title" style="margin-bottom: 1.2rem;"><i class="fa-solid fa-paper-plane" style="color: var(--primary);"></i> Send Customer Inquiry</div>
+              <form id="contact-form">
+                <div class="form-group">
+                  <label for="contact-name">Customer Full Name *</label>
+                  <input type="text" id="contact-name" class="form-control" required placeholder="e.g. Ananya Roy">
+                </div>
+                <div class="form-group">
+                  <label for="contact-email">Email Address *</label>
+                  <input type="email" id="contact-email" class="form-control" required placeholder="name@example.com">
+                </div>
+                <div class="form-group">
+                  <label for="contact-subject">Inquiry Subject *</label>
+                  <select id="contact-subject" class="form-control" required>
+                    <option value="General Inquiry">General Pharmacy Inquiry</option>
+                    <option value="Medicine Stock Availability">Medicine Stock & Price Inquiry</option>
+                    <option value="Billing & Invoice Help">Billing & Receipt Assistance</option>
+                    <option value="Prescription Guidance">Pharmacist Consultation</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="contact-message">Your Message / Question *</label>
+                  <textarea id="contact-message" class="form-control" rows="4" required placeholder="Please describe how we can assist you..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                  <i class="fa-solid fa-paper-plane"></i> Send Inquiry to Pharmacy
+                </button>
+              </form>
+            </div>
+
+            <div class="card">
+              <div class="card-title" style="margin-bottom: 1.2rem;"><i class="fa-solid fa-location-dot" style="color: var(--primary);"></i> Pharmacy Information</div>
+              <div style="line-height: 2; color: var(--text-muted);">
+                <p><strong><i class="fa-solid fa-building-user"></i> PharmaCare Headquarters</strong></p>
+                <p>123 College Campus Road, Tech Park, City - 560001</p>
+                <p><i class="fa-solid fa-phone"></i> Phone: +91 98765 43210</p>
+                <p><i class="fa-solid fa-envelope"></i> Email: support@pharmacare-project.edu</p>
+                <p><i class="fa-solid fa-qrcode"></i> UPI ID: <code id="contact-upi-display">pharmacare@upi</code></p>
+                <p style="margin-top: 1rem;"><strong><i class="fa-solid fa-clock"></i> Business Hours:</strong></p>
+                <p>Monday â€“ Saturday: 8:00 AM â€“ 10:00 PM</p>
+                <p>Sunday: 9:00 AM â€“ 6:00 PM</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- MODAL: EDIT MEDICINE -->
+  <div class="modal-backdrop" id="modal-edit-medicine">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div style="font-weight: 700; font-size: 1.1rem;"><i class="fa-solid fa-pen-to-square" style="color: var(--primary);"></i> Edit Medicine Details</div>
+        <button class="btn-icon" onclick="closeModal('modal-edit-medicine')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="edit-medicine-form">
+          <input type="hidden" id="edit-med-id">
+          <div class="form-group">
+            <label>Medicine Name</label>
+            <input type="text" id="edit-med-name" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>Generic Name</label>
+            <input type="text" id="edit-med-generic" class="form-control">
+          </div>
+          <div class="form-group">
+            <label>Category</label>
+            <select id="edit-med-category" class="form-control"></select>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Selling Price (â‚¹)</label>
+              <input type="number" step="0.01" id="edit-med-price" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label>Stock Quantity</label>
+              <input type="number" id="edit-med-stock" class="form-control" required>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('modal-edit-medicine')">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: INLINE + ADD NEW CUSTOMER IN BILLING POS -->
+  <div class="modal-backdrop" id="modal-pos-add-customer">
+    <div class="modal-box" style="max-width: 440px;">
+      <div class="modal-header">
+        <div style="font-weight: 700; font-size: 1.05rem;"><i class="fa-solid fa-user-plus" style="color: var(--primary);"></i> + Add New Customer</div>
+        <button class="btn-icon" onclick="closeModal('modal-pos-add-customer')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="pos-add-customer-form">
+          <div class="form-group">
+            <label for="pos-cust-name">Customer Full Name *</label>
+            <input type="text" id="pos-cust-name" class="form-control" placeholder="e.g. Ananya Roy" required>
+          </div>
+          <div class="form-group">
+            <label for="pos-cust-phone">Mobile Number *</label>
+            <input type="tel" id="pos-cust-phone" class="form-control" placeholder="10-digit mobile number" required pattern="[0-9]{10}">
+          </div>
+          <div class="modal-footer" style="padding-right: 0; padding-bottom: 0;">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('modal-pos-add-customer')">Cancel</button>
+            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-save"></i> Save & Select</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: PRINTABLE RECEIPT / INVOICE -->
+  <div class="modal-backdrop" id="modal-receipt">
+    <div class="modal-box" style="max-width: 500px;">
+      <div class="modal-header">
+        <div style="font-weight: 700; font-size: 1.1rem;"><i class="fa-solid fa-receipt"></i> Printable Invoice</div>
+        <button class="btn-icon" onclick="closeModal('modal-receipt')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <!-- Thermal Printable Receipt Area -->
+        <div id="printable-invoice">
+          <div class="receipt-header">
+            <div class="receipt-title">PharmaCare Pharmacy</div>
+            <div>BCA Mini Project Demo Store</div>
+            <div>Ph: +91 98765 43210</div>
+            <div style="margin-top: 0.5rem;" id="rec-inv-num">INV-2026-0000</div>
+            <div id="rec-date">Date: 2026-02-01 10:00</div>
+            <div id="rec-customer">Customer: Walk-in</div>
+          </div>
+
+          <table class="receipt-table">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Qty</th>
+                <th>Price</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody id="rec-items-tbody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+
+          <div class="receipt-total-section">
+            <div>Subtotal: <span id="rec-subtotal">â‚¹0.00</span></div>
+            <div>Discount: <span id="rec-discount">â‚¹0.00</span></div>
+            <div>Tax: <span id="rec-tax">â‚¹0.00</span></div>
+            <div style="font-size: 16px; font-weight: bold; margin-top: 4px;">Net Paid: <span id="rec-net">â‚¹0.00</span></div>
+            <div style="margin-top: 4px;">Payment Method: <span id="rec-payment">Cash</span></div>
+          </div>
+
+          <div style="text-align: center; margin-top: 1.5rem; font-size: 11px;">
+            *** Thank you for visiting PharmaCare! Get Well Soon ***
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-receipt')">Close</button>
+        <button class="btn btn-primary" onclick="window.print()"><i class="fa-solid fa-print"></i> Print Receipt</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container"></div>
+
+  <!-- JavaScript Modules -->
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
